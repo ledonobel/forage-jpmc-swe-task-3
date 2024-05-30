@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table } from '@finos/perspective';
+import {Table, TableData} from '@finos/perspective';
 import { ServerRespond } from './DataStreamer';
 import { DataManipulator } from './DataManipulator';
 import './Graph.css';
@@ -23,6 +23,12 @@ class Graph extends Component<IProps, {}> {
     const elem = document.getElementsByTagName('perspective-viewer')[0] as unknown as PerspectiveViewerElement;
 
     const schema = {
+      price_abc: 'float',
+      price_def: 'float',
+      ratio: 'float',
+      upper_bound: 'float',
+      lower_bound: 'float',
+      trigger_alert: 'float',
       stock: 'string',
       top_ask_price: 'float',
       top_bid_price: 'float',
@@ -40,19 +46,27 @@ class Graph extends Component<IProps, {}> {
       elem.setAttribute('row-pivots', '["timestamp"]');
       elem.setAttribute('columns', '["top_ask_price"]');
       elem.setAttribute('aggregates', JSON.stringify({
-        stock: 'distinctcount',
-        top_ask_price: 'avg',
-        top_bid_price: 'avg',
+        price_abc:'avg',
+        price_def:'avg',
+        ratio:'avg',
+        upper_bound:'avg',
+        lower_bound:'avg',
+        trigger_alert: 'avg',
         timestamp: 'distinct count',
       }));
     }
   }
+// Overall, this code appears to be configuring a perspective-viewer component based on the data in this.table.
+// Ensure that the configuration aligns with the requirements of your application and that the data being loaded and displayed are accurate and relevant.
 
   componentDidUpdate() {
     if (this.table) {
-      this.table.update(
+      this.table.update([
         DataManipulator.generateRow(this.props.data),
-      );
+      ] as unknown as TableData); // this line is for the argument passed to this.table.update() suggests that there might be a type mismatch or lack of type inference.
+      //Overall, the code appears to be performing an update to a table component or object based on new data received via props.
+      // Ensure that this logic is correctly placed and that the updates are triggered at the appropriate times in the component lifecycle.
+
     }
   }
 }
